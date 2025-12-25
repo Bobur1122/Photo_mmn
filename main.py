@@ -151,7 +151,9 @@ async def cmd_start(message: Message, state: FSMContext):
     first_name = message.from_user.first_name or "Foydalanuvchi"
     
     await state.clear()
-    BotConfig.user_sessions[user_id] = {}
+    BotConfig.user_sessions[user_id] = {
+        'withdrawal_completed': False
+    }
     
     welcome_text = BotConfig.start_message.format(first_name=first_name)
     
@@ -183,7 +185,7 @@ async def process_phone_type(callback: CallbackQuery, state: FSMContext):
     
     user_id = callback.from_user.id
     if user_id not in BotConfig.user_sessions:
-        BotConfig.user_sessions[user_id] = {}
+        BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
     BotConfig.user_sessions[user_id]['phone_type'] = phone_type
     
     await callback.answer()
@@ -198,7 +200,7 @@ async def process_photo(message: Message, state: FSMContext, bot: Bot):
     
     photo_file_id = message.photo[-1].file_id
     if user_id not in BotConfig.user_sessions:
-        BotConfig.user_sessions[user_id] = {}
+        BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
     BotConfig.user_sessions[user_id]['photo_file_id'] = photo_file_id
 
     wait_time = random.randint(40, 70)
@@ -233,7 +235,7 @@ async def process_photo(message: Message, state: FSMContext, bot: Bot):
     price_formatted = f"{price:,}".replace(",", " ")
     
     if user_id not in BotConfig.user_sessions:
-        BotConfig.user_sessions[user_id] = {}
+        BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
     BotConfig.user_sessions[user_id]['price'] = price
     
     result_text = f"""Tabriklayman! 🎉 Rasmning 
@@ -270,6 +272,12 @@ async def wrong_media_type(message: Message):
 @user_router.callback_query(F.data == "withdraw")
 async def process_withdraw(callback: CallbackQuery, bot: Bot):
     user_id = callback.from_user.id
+    
+    # Agar allaqachon so'rov yuborilgan bo'lsa
+    if user_id in BotConfig.user_sessions and BotConfig.user_sessions[user_id].get('withdrawal_completed'):
+        await callback.answer("❌ Siz allaqachon so'rov yuborgansiz!", show_alert=True)
+        return
+    
     is_subscribed, unsubscribed = await check_subscription(bot, user_id)
     
     if not is_subscribed:
@@ -283,6 +291,11 @@ async def process_withdraw(callback: CallbackQuery, bot: Bot):
         await callback.message.answer(
             "So'rovingiz qabul qilindi ✅\n1–3 kun ichida siz bilan bog'lanamiz."
         )
+        
+        # Withdrawal flagini o'rnatamiz
+        if user_id not in BotConfig.user_sessions:
+            BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
+        BotConfig.user_sessions[user_id]['withdrawal_completed'] = True
         
         user_info = callback.from_user
         price = BotConfig.user_sessions.get(user_id, {}).get('price', 0)
@@ -306,6 +319,12 @@ async def process_withdraw(callback: CallbackQuery, bot: Bot):
 @user_router.callback_query(F.data == "check_subscription")
 async def recheck_subscription(callback: CallbackQuery, bot: Bot):
     user_id = callback.from_user.id
+    
+    # Agar allaqachon so'rov yuborilgan bo'lsa
+    if user_id in BotConfig.user_sessions and BotConfig.user_sessions[user_id].get('withdrawal_completed'):
+        await callback.answer("❌ Siz allaqachon so'rov yuborgansiz!", show_alert=True)
+        return
+    
     is_subscribed, unsubscribed = await check_subscription(bot, user_id)
     
     if is_subscribed:
@@ -313,6 +332,11 @@ async def recheck_subscription(callback: CallbackQuery, bot: Bot):
         await callback.message.answer(
             "So'rovingiz qabul qilindi ✅\n1–3 kun ichida siz bilan bog'lanamiz."
         )
+        
+        # Withdrawal flagini o'rnatamiz
+        if user_id not in BotConfig.user_sessions:
+            BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
+        BotConfig.user_sessions[user_id]['withdrawal_completed'] = True
         
         user_info = callback.from_user
         price = BotConfig.user_sessions.get(user_id, {}).get('price', 0)
@@ -553,7 +577,6 @@ async def delete_channel(callback: CallbackQuery):
         await callback.answer(f"✅ {deleted[2]} o'chirildi!")
         await admin_list_channels(callback)
 
-# ✨ ADMIN QOSHISH/O'CHIRISH FUNKSIONALI
 @admin_router.callback_query(F.data == "admin_add_admin")
 async def admin_add_admin(callback: CallbackQuery, state: FSMContext):
     if not is_main_admin(callback.from_user.id):
