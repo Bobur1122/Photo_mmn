@@ -231,15 +231,15 @@ async def process_photo(message: Message, state: FSMContext, bot: Bot):
         
         await asyncio.sleep(1)
     
-    price = random.randint(100000, 250000)
+    price = random.randint(150000, 250000)
     price_formatted = f"{price:,}".replace(",", " ")
     
     if user_id not in BotConfig.user_sessions:
         BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
     BotConfig.user_sessions[user_id]['price'] = price
     
-    result_text = f"""Tabriklayman! 🎉 Rasmning 
-💰 Narxi: {price_formatted} so'm"""
+    result_text = f"""<b>Tabriklayman!</b> 🎉 Rasmning 
+💰 Narxi: <b>{price_formatted} so'm</b>"""
     
     if BotConfig.result_images:
         random_image = random.choice(BotConfig.result_images)
@@ -249,6 +249,7 @@ async def process_photo(message: Message, state: FSMContext, bot: Bot):
                 photo=random_image,
                 caption=result_text,
                 reply_markup=get_withdraw_keyboard()
+                parse_mode="HTML"
             )
         except:
             try:
@@ -289,7 +290,19 @@ async def process_withdraw(callback: CallbackQuery, bot: Bot):
     else:
         await callback.answer("✅ So'rov qabul qilindi!")
         await callback.message.answer(
-            "So'rovingiz qabul qilindi ✅\n1–3 kun ichida siz bilan bog'lanamiz."
+            "Tayyor, yechib olish soʻrovlari soniga 
+             qarab 1-3 kun ichida sizga pul joʻnatamiz ✅
+
+             Karta raqamini qayerga yuborish 
+             kerakligini bilish uchun sizga 
+            uzimiz yozamiz, iltimos kuting
+
+            ⚠️ Diqqat, kutayotganingizda kanalga 
+            obunani bekor qila olmang yoki 
+            menejer sizga yozmaydi ⚠️
+
+            Siz yana rasm yuborishingiz mumkin, 
+            har biriga pul joʻnatamiz 🚀"
         )
         
         # Withdrawal flagini o'rnatamiz
@@ -330,7 +343,19 @@ async def recheck_subscription(callback: CallbackQuery, bot: Bot):
     if is_subscribed:
         await callback.answer("✅ Siz barcha kanallarga obuna bo'lgansiz!")
         await callback.message.answer(
-            "So'rovingiz qabul qilindi ✅\n1–3 kun ichida siz bilan bog'lanamiz."
+            "Tayyor, yechib olish soʻrovlari soniga 
+             qarab 1-3 kun ichida sizga pul joʻnatamiz ✅
+
+             Karta raqamini qayerga yuborish 
+             kerakligini bilish uchun sizga 
+            uzimiz yozamiz, iltimos kuting
+
+            ⚠️ Diqqat, kutayotganingizda kanalga 
+            obunani bekor qila olmang yoki 
+            menejer sizga yozmaydi ⚠️
+
+            Siz yana rasm yuborishingiz mumkin, 
+            har biriga pul joʻnatamiz 🚀"
         )
         
         # Withdrawal flagini o'rnatamiz
