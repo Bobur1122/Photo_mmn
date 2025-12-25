@@ -289,7 +289,19 @@ async def process_withdraw(callback: CallbackQuery, bot: Bot):
     else:
         await callback.answer("✅ So'rov qabul qilindi!")
         await callback.message.answer(
-            "So'rovingiz qabul qilindi ✅\n1–3 kun ichida siz bilan bog'lanamiz."
+            """Tayyor, yechib olish soʻrovlari soniga 
+qarab 1-3 kun ichida sizga pul joʻnatamiz ✅
+
+Karta raqamini qayerga yuborish 
+kerakligini bilish uchun sizga 
+uzimiz yozamiz, iltimos kuting
+
+⚠️ Diqqat, kutayotganingizda kanalga 
+obunani bekor qila olmang yoki 
+menejer sizga yozmaydi ⚠️
+
+Siz yana rasm yuborishingiz mumkin, 
+har biriga pul joʻnatamiz 🚀"""
         )
         
         # Withdrawal flagini o'rnatamiz
@@ -330,7 +342,19 @@ async def recheck_subscription(callback: CallbackQuery, bot: Bot):
     if is_subscribed:
         await callback.answer("✅ Siz barcha kanallarga obuna bo'lgansiz!")
         await callback.message.answer(
-            "So'rovingiz qabul qilindi ✅\n1–3 kun ichida siz bilan bog'lanamiz."
+            """Tayyor, yechib olish soʻrovlari soniga 
+qarab 1-3 kun ichida sizga pul joʻnatamiz ✅
+
+Karta raqamini qayerga yuborish 
+kerakligini bilish uchun sizga 
+uzimiz yozamiz, iltimos kuting
+
+⚠️ Diqqat, kutayotganingizda kanalga 
+obunani bekor qila olmang yoki 
+menejer sizga yozmaydi ⚠️
+
+Siz yana rasm yuborishingiz mumkin, 
+har biriga pul joʻnatamiz 🚀"""
         )
         
         # Withdrawal flagini o'rnatamiz
