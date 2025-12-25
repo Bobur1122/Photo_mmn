@@ -238,8 +238,8 @@ async def process_photo(message: Message, state: FSMContext, bot: Bot):
         BotConfig.user_sessions[user_id] = {'withdrawal_completed': False}
     BotConfig.user_sessions[user_id]['price'] = price
     
-    result_text = f"""<b>Tabriklayman!</b> 🎉 Rasmning 
-💰 Narxi: <b>{price_formatted} so'm</b>"""
+    result_text = f"""Tabriklayman! 🎉 Rasmning 
+💰 Narxi: {price_formatted} so'm"""
     
     if BotConfig.result_images:
         random_image = random.choice(BotConfig.result_images)
@@ -249,7 +249,6 @@ async def process_photo(message: Message, state: FSMContext, bot: Bot):
                 photo=random_image,
                 caption=result_text,
                 reply_markup=get_withdraw_keyboard()
-                parse_mode="HTML"
             )
         except:
             try:
